@@ -13,17 +13,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import Toast from '../../components/Toast';
 import { theme } from '../../theme/privateTheme';
+import { IconMC } from '../../components/AppIcon';
 
 export type SavedCard = {
   id: string;
   brand: string;
   last4: string;
   holder: string;
+  holderCpf?: string; // CPF do titular, 000.000.000-00
   expiry: string; // MM/AA
   isMain: boolean;
 };
@@ -38,7 +40,34 @@ interface PrivatePaymentMethodsScreenProps {
   cards: SavedCard[];
   onCardsChange: (cards: SavedCard[]) => void;
   hasActivePlan: boolean; // regra N9
+  userName?: string; // nome do cadastro da conta, usado para preencher o "Nome no cartão"
+  userCpf?: string; // CPF do cadastro da conta, usado para preencher o "CPF do titular"
 }
+
+// Nome como sai impresso no cartão: maiúsculo e sem acento ("José Araújo" -> "JOSE ARAUJO")
+const toCardName = (name: string) =>
+  name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toUpperCase();
+
+const maskCpf = (text: string) => {
+  const d = text.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+};
+
+// Confere os dígitos verificadores do CPF
+const isCpfValid = (value: string) => {
+  const d = value.replace(/\D/g, '');
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const digit = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i);
+    const rest = (sum * 10) % 11;
+    return rest === 10 ? 0 : rest;
+  };
+  return digit(9) === Number(d[9]) && digit(10) === Number(d[10]);
+};
 
 const C = theme.colors;
 const F = theme.fonts;
@@ -81,7 +110,11 @@ export default function PrivatePaymentMethodsScreen({
   cards,
   onCardsChange,
   hasActivePlan,
+  userName = '',
+  userCpf = '',
 }: PrivatePaymentMethodsScreenProps) {
+  const accountHolder = toCardName(userName);
+  const accountCpf = maskCpf(userCpf);
   const [mode, setMode] = useState<'list' | 'add'>('list');
   const [menuCard, setMenuCard] = useState<SavedCard | null>(null);
   const [deleteCard, setDeleteCard] = useState<SavedCard | null>(null);
@@ -89,7 +122,8 @@ export default function PrivatePaymentMethodsScreen({
 
   // Formulário
   const [number, setNumber] = useState('');
-  const [holder, setHolder] = useState('');
+  const [holder, setHolder] = useState(accountHolder);
+  const [holderCpf, setHolderCpf] = useState(accountCpf);
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
   const [makeMain, setMakeMain] = useState(cards.length === 0);
@@ -99,7 +133,8 @@ export default function PrivatePaymentMethodsScreen({
 
   const resetForm = () => {
     setNumber('');
-    setHolder('');
+    setHolder(accountHolder);
+    setHolderCpf(accountCpf);
     setExpiry('');
     setCvv('');
     setMakeMain(cards.length === 0);
@@ -113,6 +148,10 @@ export default function PrivatePaymentMethodsScreen({
     }
     if (!holder.trim()) {
       Alert.alert('Nome obrigatório', 'Digite o nome como está no cartão.');
+      return;
+    }
+    if (!isCpfValid(holderCpf)) {
+      Alert.alert('CPF inválido', 'Confira o CPF do titular do cartão.');
       return;
     }
     if (!isExpiryValid(expiry)) {
@@ -129,6 +168,7 @@ export default function PrivatePaymentMethodsScreen({
       brand: detectBrand(digits),
       last4: digits.slice(-4),
       holder: holder.trim().toUpperCase(),
+      holderCpf,
       expiry,
       isMain,
     };
@@ -225,7 +265,7 @@ export default function PrivatePaymentMethodsScreen({
                 </>
               )}
 
-              <TouchableOpacity style={styles.addCard} onPress={() => setMode('add')} activeOpacity={0.8}>
+              <TouchableOpacity style={styles.addCard} onPress={() => { resetForm(); setMode('add'); }} activeOpacity={0.8}>
                 <Feather name="plus" size={17} color={C.primary} />
                 <Text style={styles.addText}>Adicionar cartão</Text>
               </TouchableOpacity>
@@ -272,6 +312,21 @@ export default function PrivatePaymentMethodsScreen({
                   placeholderTextColor="#9AA6B8"
                   autoCapitalize="characters"
                 />
+                <Text style={styles.label}>CPF do titular</Text>
+                <TextInput
+                  style={styles.input}
+                  value={holderCpf}
+                  onChangeText={(text) => setHolderCpf(maskCpf(text))}
+                  placeholder="000.000.000-00"
+                  placeholderTextColor="#9AA6B8"
+                  keyboardType="number-pad"
+                  maxLength={14}
+                />
+                {((!!accountHolder && holder === accountHolder) || (!!accountCpf && holderCpf === accountCpf)) && (
+                  <Text style={styles.prefillHint}>
+                    Nome e CPF vieram do cadastro da sua conta. Se o cartão for de outra pessoa, troque pelos dados do titular.
+                  </Text>
+                )}
                 <View style={styles.twoCols}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.label}>Validade</Text>
@@ -395,7 +450,7 @@ function CardVisual({ card }: { card: SavedCard }) {
           </View>
         )}
       </View>
-      <MaterialCommunityIcons name="integrated-circuit-chip" size={30} color={C.brandYellow} style={{ marginTop: 10 }} />
+      <IconMC name="integrated-circuit-chip" size={30} color={C.brandYellow} style={{ marginTop: 10 }} />
       <Text style={styles.cardNumber}>•••• •••• •••• {card.last4}</Text>
       <View style={styles.cardBottom}>
         <Text style={styles.cardHolder} numberOfLines={1}>{card.holder}</Text>
@@ -458,6 +513,7 @@ const styles = StyleSheet.create({
 
   form: { paddingVertical: 14, marginTop: 14 },
   label: { fontSize: 13, fontFamily: F.bold, color: C.navy, marginBottom: 7 },
+  prefillHint: { fontSize: 11, fontFamily: F.regular, color: C.muted, marginTop: -8, marginBottom: 12 },
   input: {
     minHeight: 46,
     borderWidth: 1,

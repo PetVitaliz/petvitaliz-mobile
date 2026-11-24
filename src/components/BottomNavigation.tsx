@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Icon, IconMC } from './AppIcon';
 
 interface BottomNavigationProps {
   currentRoute: 'Home' | 'Explore' | 'Plans' | 'Benefits' | 'Profile';
@@ -72,7 +72,7 @@ export default function BottomNavigation({
         label="Início"
         onPress={onNavigateToHome}
       >
-        <Ionicons
+        <Icon
           name={currentRoute === 'Home' ? 'home' : 'home-outline'}
           size={20}
           color={color('Home')}
@@ -85,7 +85,7 @@ export default function BottomNavigation({
         label="Plano"
         onPress={onNavigateToPlans}
       >
-        <MaterialCommunityIcons
+        <IconMC
           name={currentRoute === 'Plans' ? 'crown' : 'crown-outline'}
           size={24}
           color={color('Plans')}
@@ -98,7 +98,7 @@ export default function BottomNavigation({
         label="Benefícios"
         onPress={onNavigateToBenefits}
       >
-        <Ionicons
+        <Icon
           name={currentRoute === 'Benefits' ? 'gift' : 'gift-outline'}
           size={20}
           color={color('Benefits')}
@@ -111,7 +111,7 @@ export default function BottomNavigation({
         label="Perfil"
         onPress={onNavigateToProfile}
       >
-        <Ionicons
+        <Icon
           name={currentRoute === 'Profile' ? 'person' : 'person-outline'}
           size={20}
           color={color('Profile')}
@@ -128,10 +128,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: '92%',
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 28, // folga da barrinha de gestos do celular
     borderRadius: 28,
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
@@ -148,17 +148,17 @@ const styles = StyleSheet.create({
   },
 
   tabContent: {
-    width: 76,
-    height: 56,
+    width: 64,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   // Bloco azul da aba ativa, com ícone e nome dentro
   activePill: {
-    width: 76,
-    height: 56,
-    borderRadius: 22,
+    width: 64,
+    height: 52,
+    borderRadius: 20,
     backgroundColor: '#183C98',
     alignItems: 'center',
     justifyContent: 'center',

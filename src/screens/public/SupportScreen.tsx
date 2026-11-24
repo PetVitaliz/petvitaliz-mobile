@@ -10,8 +10,8 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from '../../components/BottomNavigation';
+import { Icon } from '../../components/AppIcon';
 
 interface SupportScreenProps {
   onBack?: () => void;
@@ -48,7 +48,7 @@ export default function SupportScreen({
           onPress={onBack || onNavigateToProfile}
           activeOpacity={0.7}
         >
-          <Ionicons name="chevron-back" size={24} color="#21479B" />
+          <Icon name="chevron-back" size={24} color="#21479B" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Ajuda e Suporte</Text>
         <View style={{ width: 24 }} />
@@ -59,7 +59,7 @@ export default function SupportScreen({
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.heroCard}>
-          <Ionicons name="headset-outline" size={36} color="#FFFFFF" />
+          <Icon name="headset-outline" size={36} color="#FFFFFF" />
           <Text style={styles.heroTitle}>Como podemos ajudar?</Text>
           <Text style={styles.heroSubtitle}>
             Nossa equipe está pronta para tirar suas dúvidas e resolver qualquer questão sobre o PetVitaliz.
@@ -71,24 +71,24 @@ export default function SupportScreen({
           
           <TouchableOpacity style={styles.contactItem} activeOpacity={0.7}>
             <View style={styles.contactIconBadge}>
-              <Ionicons name="chatbubbles-outline" size={22} color="#21479B" />
+              <Icon name="chatbubbles-outline" size={22} color="#21479B" />
             </View>
             <View style={styles.contactInfo}>
               <Text style={styles.contactTitle}>Chat ao Vivo</Text>
               <Text style={styles.contactDesc}>Atendimento rápido via chat no app</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+            <Icon name="chevron-forward" size={18} color="#94A3B8" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.contactItem} activeOpacity={0.7}>
             <View style={styles.contactIconBadge}>
-              <Ionicons name="mail-outline" size={22} color="#21479B" />
+              <Icon name="mail-outline" size={22} color="#21479B" />
             </View>
             <View style={styles.contactInfo}>
               <Text style={styles.contactTitle}>E-mail de Suporte</Text>
               <Text style={styles.contactDesc}>suporte@petvitaliz.com</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+            <Icon name="chevron-forward" size={18} color="#94A3B8" />
           </TouchableOpacity>
         </View>
 

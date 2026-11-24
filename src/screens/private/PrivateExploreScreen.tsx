@@ -11,8 +11,8 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
+import { Icon } from '../../components/AppIcon';
 
 interface PrivateExploreScreenProps {
   onBack?: () => void;
@@ -47,7 +47,7 @@ export default function PrivateExploreScreen({
       <View style={styles.header}>
         {onBack && (
           <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <Ionicons name="chevron-back" size={24} color="#183C98" />
+            <Icon name="chevron-back" size={24} color="#183C98" />
           </TouchableOpacity>
         )}
         <Text style={styles.headerTitle}>Explorar</Text>
@@ -56,7 +56,7 @@ export default function PrivateExploreScreen({
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Campo de Pesquisa */}
         <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={18} color="#94A3B8" style={styles.searchIcon} />
+          <Icon name="search-outline" size={18} color="#94A3B8" style={styles.searchIcon} />
           <TextInput
             placeholder="Buscar dúvidas..."
             placeholderTextColor="#94A3B8"
@@ -85,7 +85,7 @@ export default function PrivateExploreScreen({
           {categories.map((cat) => (
             <TouchableOpacity key={cat.id} style={styles.categoryCard} activeOpacity={0.8}>
               <View style={styles.categoryIconCircle}>
-                <Ionicons name={cat.icon as any} size={22} color="#183C98" />
+                <Icon name={cat.icon as any} size={22} color="#183C98" />
               </View>
               <Text style={styles.categoryName}>{cat.name}</Text>
             </TouchableOpacity>

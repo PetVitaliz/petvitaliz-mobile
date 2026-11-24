@@ -300,4 +300,4 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: '#FFFFFF', fontSize: 14, fontFamily: F.bold },
   textButton: { alignItems: 'center', paddingVertical: 14 },
   linkText: { fontSize: 14, fontFamily: F.bold, color: C.primary },
-});
+});

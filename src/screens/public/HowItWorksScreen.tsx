@@ -10,7 +10,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../components/AppIcon';
 
 interface HowItWorksScreenProps {
   onBack?: () => void;
@@ -32,7 +32,7 @@ export default function HowItWorksScreen({
       {/* Topo / Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={24} color="#21479B" />
+          <Icon name="chevron-back" size={24} color="#21479B" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Como funciona</Text>
         <View style={{ width: 24 }} />
@@ -133,12 +133,12 @@ export default function HowItWorksScreen({
       {/* Bottom Bar */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomTab} onPress={onBack} activeOpacity={0.7}>
-          <Ionicons name="home-outline" size={22} color="#94A3B8" />
+          <Icon name="home-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Início</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.bottomTab} onPress={onNavigateToServices} activeOpacity={0.7}>
-          <Ionicons name="search-outline" size={22} color="#94A3B8" />
+          <Icon name="search-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Explorar</Text>
         </TouchableOpacity>
 
@@ -152,12 +152,12 @@ export default function HowItWorksScreen({
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.bottomTab} activeOpacity={0.7}>
-          <Ionicons name="gift-outline" size={22} color="#94A3B8" />
+          <Icon name="gift-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Benefícios</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.bottomTab} onPress={onNavigateToLogin} activeOpacity={0.7}>
-          <Ionicons name="person-outline" size={22} color="#94A3B8" />
+          <Icon name="person-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Perfil</Text>
         </TouchableOpacity>
       </View>

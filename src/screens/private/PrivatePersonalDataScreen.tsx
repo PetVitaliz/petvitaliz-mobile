@@ -379,4 +379,4 @@ const styles = StyleSheet.create({
   sheetTitle: { fontSize: 17, fontFamily: F.bold, color: C.navy },
   sheetText: { fontSize: 13, fontFamily: F.regular, color: C.textSecondary, marginTop: 6, marginBottom: 14, lineHeight: 19 },
   codeInput: { textAlign: 'center', fontSize: 20, letterSpacing: 6 },
-});
+});

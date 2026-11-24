@@ -15,13 +15,15 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import PetAvatar, { getSpeciesIcon } from '../../components/PetAvatar';
 import { theme } from '../../theme/privateTheme';
-import { PLAN_NAMES, getPlanId } from '../../data/planCoverage';
+import { PLAN_NAMES, PLAN_COVERAGE, SERVICES, getPlanId } from '../../data/planCoverage';
+import type { ConsultationAppointment } from './PrivateConsultationsScreen';
+import { Icon, IconMC } from '../../components/AppIcon';
 
 export interface Pet {
   id: string;
@@ -56,7 +58,21 @@ interface PrivatePetsFlowScreenProps {
 
   pets: Pet[];
   onPetsChange: React.Dispatch<React.SetStateAction<Pet[]>>;
+  appointments?: ConsultationAppointment[]; // para o Histórico do perfil
+  onOpenConsultations?: (petId?: string) => void; // abre Consultas (agendar ou ver todos)
 }
+
+// "2026-11-26" -> "26/11/2026"
+const brDate = (iso: string) => {
+  const [y, m, d] = iso.split('-');
+  return d && m && y ? `${d}/${m}/${y}` : iso;
+};
+
+const APPOINTMENT_STATUS = {
+  scheduled: { label: 'Agendada', bg: '#E7F6EF', color: theme.colors.success },
+  completed: { label: 'Concluída', bg: theme.colors.primarySoft, color: theme.colors.primary },
+  cancelled: { label: 'Cancelada', bg: '#FDECEC', color: theme.colors.danger },
+} as const;
 
 type FlowMode = 'list' | 'empty' | 'step1' | 'step2' | 'step3' | 'profile';
 type ProfileTab = 'sobre' | 'saude' | 'historico';
@@ -155,6 +171,19 @@ function BounceChip({
   );
 }
 
+// Linha com ícone do perfil do pet
+function InfoRow({ icon, label, value, last }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; value: string; last?: boolean }) {
+  return (
+    <View style={[styles.infoRow, !last && styles.infoRowDivider]}>
+      <View style={styles.infoRowIcon}>
+        <Icon name={icon} size={15} color={theme.colors.primary} />
+      </View>
+      <Text style={styles.infoRowLabel}>{label}</Text>
+      <Text style={styles.infoRowValue} numberOfLines={2}>{value}</Text>
+    </View>
+  );
+}
+
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.detailRow}>
@@ -174,6 +203,8 @@ export default function PrivatePetsFlowScreen({
   onContractPlan,
   pets,
   onPetsChange,
+  appointments = [],
+  onOpenConsultations,
 }: PrivatePetsFlowScreenProps) {
   const [mode, setMode] = useState<FlowMode>(
     pets.length > 0 ? 'list' : 'empty',
@@ -468,7 +499,7 @@ export default function PrivatePetsFlowScreen({
           },
         ]}
       >
-        <MaterialCommunityIcons name={getSpeciesIcon(pet.species)} size={size * 0.48} color="#183C98" />
+        <IconMC name={getSpeciesIcon(pet.species)} size={size * 0.48} color="#183C98" />
       </View>
     );
   };
@@ -483,9 +514,9 @@ export default function PrivatePetsFlowScreen({
       activeOpacity={0.75}
       onPress={onPress}
     >
-      <Ionicons name={icon} size={19} color="#183C98" />
+      <Icon name={icon} size={19} color="#183C98" />
       <Text style={styles.menuButtonText}>{title}</Text>
-      <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+      <Icon name="chevron-forward" size={18} color="#94A3B8" />
     </TouchableOpacity>
   );
 
@@ -680,7 +711,7 @@ export default function PrivatePetsFlowScreen({
                 onPress={() => setIsSpeciesModalVisible(true)}
                 activeOpacity={0.8}
               >
-                <MaterialCommunityIcons
+                <IconMC
                   name={getSpeciesIcon(petSpecies)}
                   size={18}
                   color={theme.colors.primary}
@@ -727,7 +758,7 @@ export default function PrivatePetsFlowScreen({
                       onPress={() => setPetGender(gender)}
                       activeOpacity={0.8}
                     >
-                      <MaterialCommunityIcons
+                      <IconMC
                         name={gender === 'Fêmea' ? 'gender-female' : 'gender-male'}
                         size={16}
                         color={selected ? theme.colors.primary : theme.colors.textSecondary}
@@ -865,7 +896,7 @@ export default function PrivatePetsFlowScreen({
 
             <TouchableOpacity style={styles.v2PrimaryButton} onPress={finishWithWiggle} activeOpacity={0.85}>
               <Animated.View style={{ transform: [{ rotate: wiggle(pawWiggle) }] }}>
-                <MaterialCommunityIcons name="paw" size={18} color="#FFFFFF" />
+                <IconMC name="paw" size={18} color="#FFFFFF" />
               </Animated.View>
               <Text style={styles.v2PrimaryButtonText}>
                 {editingPetId
@@ -878,121 +909,193 @@ export default function PrivatePetsFlowScreen({
           </>
         )}
 
-        {mode === 'profile' && selectedPet && (
+        {mode === 'profile' && selectedPet && (() => {
+          const petPlanId = selectedPet.hasActivePlan ? getPlanId(selectedPet.plan) : null;
+          const petAppointments = appointments
+            .filter((item) => item.petId === selectedPet.id)
+            .sort((x, y) => (x.date + x.time < y.date + y.time ? 1 : -1));
+          const chips = (selectedPet.traits?.length ?? 0) + (selectedPet.loves?.length ?? 0) > 0;
+          return (
           <>
+            {/* Cabeçalho */}
             <View style={styles.profilePetHeader}>
               {renderPetAvatar(selectedPet, 92)}
               <Text style={styles.profilePetName}>{selectedPet.name}</Text>
               <Text style={styles.profilePetSubtitle}>
                 {selectedPet.species} · {selectedPet.breed}
               </Text>
-              <Text style={styles.profilePetPlan}>
-                {selectedPet.hasActivePlan
-                  ? selectedPet.plan || 'Plano ativo'
-                  : 'Pet sem plano'}
-              </Text>
+              {petPlanId ? (
+                <View style={styles.planPill}>
+                  <IconMC name="crown" size={13} color="#B7791F" />
+                  <Text style={styles.planPillText}>{PLAN_NAMES[petPlanId]}</Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.planPill, styles.planPillEmpty]}
+                  onPress={() => onContractPlan?.(selectedPet.id)}
+                  activeOpacity={0.8}
+                >
+                  <IconMC name="crown-outline" size={13} color={T.primary} />
+                  <Text style={[styles.planPillText, { color: T.primary }]}>Sem plano · Contratar</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
+            {/* Resumo rápido */}
+            <View style={styles.statsRow}>
+              {[
+                { icon: 'calendar-outline' as const, label: 'Idade', value: selectedPet.age || '—' },
+                { icon: (selectedPet.gender === 'Fêmea' ? 'female' : 'male') as 'female' | 'male', label: 'Sexo', value: selectedPet.gender || '—' },
+                { icon: 'barbell-outline' as const, label: 'Peso', value: selectedPet.weight || '—' },
+              ].map((stat) => (
+                <View key={stat.label} style={styles.statTile}>
+                  <Icon name={stat.icon} size={17} color={T.primary} />
+                  <Text style={styles.statValue} numberOfLines={1}>{stat.value}</Text>
+                  <Text style={styles.statLabel}>{stat.label}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Abas */}
             <View style={styles.profileTabs}>
               {(['sobre', 'saude', 'historico'] as ProfileTab[]).map((tab) => (
                 <TouchableOpacity
                   key={tab}
-                  style={[
-                    styles.profileTab,
-                    profileTab === tab && styles.profileTabActive,
-                  ]}
+                  style={[styles.profileTab, profileTab === tab && styles.profileTabActive]}
                   onPress={() => setProfileTab(tab)}
+                  activeOpacity={0.8}
                 >
-                  <Text
-                    style={[
-                      styles.profileTabText,
-                      profileTab === tab && styles.profileTabTextActive,
-                    ]}
-                  >
-                    {tab === 'sobre'
-                      ? 'Sobre'
-                      : tab === 'saude'
-                        ? 'Saúde'
-                        : 'Histórico'}
+                  <Text style={[styles.profileTabText, profileTab === tab && styles.profileTabTextActive]}>
+                    {tab === 'sobre' ? 'Sobre' : tab === 'saude' ? 'Saúde' : 'Histórico'}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
             {profileTab === 'sobre' && (
-              <View style={styles.detailCard}>
-                <Text style={styles.detailTitle}>Informações do pet</Text>
-                <DetailRow label="Nome" value={selectedPet.name} />
-                <DetailRow label="Espécie" value={selectedPet.species} />
-                <DetailRow label="Raça" value={selectedPet.breed} />
-                <DetailRow label="Idade" value={selectedPet.age} />
-                <DetailRow label="Sexo" value={selectedPet.gender} />
-                <DetailRow
-                  label="Peso"
-                  value={selectedPet.weight || 'Não informado'}
-                />
-                <DetailRow
-                  label="Sobre"
-                  value={selectedPet.bio || 'Nenhuma informação adicionada.'}
-                />
-                {(selectedPet.traits?.length ?? 0) + (selectedPet.loves?.length ?? 0) > 0 && (
-                  <View style={[styles.chipWrap, { marginTop: 12, marginBottom: 0 }]}>
-                    {(selectedPet.traits ?? []).map((id) => (
-                      <View key={id} style={[styles.chip, styles.chipBlue]}>
-                        <Text style={[styles.chipText, { color: '#FFFFFF' }]}>
-                          {traitLabel(id, selectedPet.gender)}
-                        </Text>
-                      </View>
-                    ))}
-                    {(selectedPet.loves ?? []).map((id) => (
-                      <View key={id} style={[styles.chip, styles.chipOrange]}>
-                        <Text style={[styles.chipText, { color: theme.colors.warning }]}>
-                          Adora {loveLabel(id).toLowerCase()}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
+              <>
+                <View style={styles.detailCard}>
+                  <Text style={styles.detailTitle}>Sobre {selectedPet.name}</Text>
+                  <Text style={styles.bioText}>
+                    {selectedPet.bio || 'Nenhuma descrição adicionada ainda. Toque em "Editar informações" para contar mais sobre o seu pet.'}
+                  </Text>
+                  {chips && (
+                    <View style={[styles.chipWrap, { marginTop: 12, marginBottom: 0 }]}>
+                      {(selectedPet.traits ?? []).map((id) => (
+                        <View key={id} style={[styles.chip, styles.chipBlue]}>
+                          <Text style={[styles.chipText, { color: '#FFFFFF' }]}>{traitLabel(id, selectedPet.gender)}</Text>
+                        </View>
+                      ))}
+                      {(selectedPet.loves ?? []).map((id) => (
+                        <View key={id} style={[styles.chip, styles.chipOrange]}>
+                          <Text style={[styles.chipText, { color: theme.colors.warning }]}>Adora {loveLabel(id).toLowerCase()}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                <View style={[styles.detailCard, { marginTop: 12 }]}>
+                  <Text style={styles.detailTitle}>Informações</Text>
+                  <InfoRow icon="paw-outline" label="Espécie" value={selectedPet.species} />
+                  <InfoRow icon="ribbon-outline" label="Raça" value={selectedPet.breed} />
+                  <InfoRow icon="calendar-outline" label="Idade" value={selectedPet.age || 'Não informada'} />
+                  <InfoRow icon={selectedPet.gender === 'Fêmea' ? 'female' : 'male'} label="Sexo" value={selectedPet.gender || 'Não informado'} />
+                  <InfoRow icon="barbell-outline" label="Peso" value={selectedPet.weight || 'Não informado'} last />
+                </View>
+              </>
             )}
 
             {profileTab === 'saude' && (
-              <View style={styles.emptyDetailCard}>
-                <Ionicons
-                  name="heart-outline"
-                  size={32}
-                  color="#94A3B8"
-                />
-                <Text style={styles.emptyDetailText}>
-                  Não há informações de saúde cadastradas para este pet.
-                </Text>
-              </View>
+              petPlanId ? (
+                <View style={styles.detailCard}>
+                  <Text style={styles.detailTitle}>Cobertura do {PLAN_NAMES[petPlanId]}</Text>
+                  {SERVICES.map((service, index) => {
+                    const quota = PLAN_COVERAGE[petPlanId][service.id];
+                    return (
+                      <View key={service.id} style={[styles.infoRow, index < SERVICES.length - 1 && styles.infoRowDivider]}>
+                        <View style={[styles.infoRowIcon, !quota && { backgroundColor: '#F1F4F9' }]}>
+                          <Icon name={service.icon as any} size={15} color={quota ? T.primary : '#A7B1C2'} />
+                        </View>
+                        <Text style={[styles.infoRowValue, { textAlign: 'left' }, !quota && { color: '#A7B1C2' }]}>{service.name}</Text>
+                        <Text style={[styles.quotaText, !quota && { color: '#A7B1C2' }]}>
+                          {!quota ? 'Não incluso' : quota === 'ilimitado' ? 'Ilimitado' : `${quota}x por mês`}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                  <TouchableOpacity style={styles.inlineButton} onPress={() => onOpenConsultations?.(selectedPet.id)} activeOpacity={0.85}>
+                    <Icon name="calendar-outline" size={16} color="#FFFFFF" />
+                    <Text style={styles.inlineButtonText}>Agendar para {selectedPet.name}</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View style={styles.emptyDetailCard}>
+                  <View style={styles.emptyIcon}>
+                    <Icon name="heart-outline" size={24} color={T.primary} />
+                  </View>
+                  <Text style={styles.emptyDetailTitle}>Sem cobertura de saúde</Text>
+                  <Text style={styles.emptyDetailText}>
+                    Com um plano, {selectedPet.name} tem consultas, vacinas e emergência 24h.
+                  </Text>
+                  <TouchableOpacity style={styles.inlineButton} onPress={() => onContractPlan?.(selectedPet.id)} activeOpacity={0.85}>
+                    <IconMC name="crown-outline" size={16} color="#FFFFFF" />
+                    <Text style={styles.inlineButtonText}>Ver planos</Text>
+                  </TouchableOpacity>
+                </View>
+              )
             )}
 
             {profileTab === 'historico' && (
-              <View style={styles.emptyDetailCard}>
-                <Ionicons
-                  name="document-text-outline"
-                  size={32}
-                  color="#94A3B8"
-                />
-                <Text style={styles.emptyDetailText}>
-                  Ainda não há registros no histórico deste pet.
-                </Text>
-              </View>
+              petAppointments.length > 0 ? (
+                <View style={styles.detailCard}>
+                  <Text style={styles.detailTitle}>Agendamentos de {selectedPet.name}</Text>
+                  {petAppointments.slice(0, 5).map((item, index, list) => {
+                    const status = APPOINTMENT_STATUS[item.status];
+                    return (
+                      <View key={item.id} style={[styles.infoRow, index < list.length - 1 && styles.infoRowDivider]}>
+                        <View style={styles.infoRowIcon}>
+                          <Icon name="calendar-outline" size={15} color={T.primary} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.infoRowValue, { textAlign: 'left' }]} numberOfLines={1}>{item.service}</Text>
+                          <Text style={styles.infoRowLabel}>{brDate(item.date)} às {item.time}</Text>
+                        </View>
+                        <View style={[styles.statusPill, { backgroundColor: status.bg }]}>
+                          <Text style={[styles.statusPillText, { color: status.color }]}>{status.label}</Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+                  <TouchableOpacity style={styles.linkButton} onPress={() => onOpenConsultations?.()} activeOpacity={0.7}>
+                    <Text style={styles.linkButtonText}>Ver todos os agendamentos</Text>
+                    <Icon name="chevron-forward" size={15} color={T.primary} />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View style={styles.emptyDetailCard}>
+                  <View style={styles.emptyIcon}>
+                    <Icon name="document-text-outline" size={24} color={T.primary} />
+                  </View>
+                  <Text style={styles.emptyDetailTitle}>Nenhum agendamento ainda</Text>
+                  <Text style={styles.emptyDetailText}>
+                    As consultas e serviços de {selectedPet.name} vão aparecer aqui.
+                  </Text>
+                  <TouchableOpacity style={styles.inlineButton} onPress={() => onOpenConsultations?.(selectedPet.id)} activeOpacity={0.85}>
+                    <Icon name="calendar-outline" size={16} color="#FFFFFF" />
+                    <Text style={styles.inlineButtonText}>Agendar agora</Text>
+                  </TouchableOpacity>
+                </View>
+              )
             )}
 
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={() => startEditingPet(selectedPet)}
-            >
-              <Ionicons name="pencil-outline" size={17} color="#183C98" />
-              <Text style={styles.secondaryBtnText}>
-                Editar informações
-              </Text>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={() => startEditingPet(selectedPet)} activeOpacity={0.85}>
+              <Icon name="pencil-outline" size={17} color={T.primary} />
+              <Text style={styles.secondaryBtnText}>Editar informações</Text>
             </TouchableOpacity>
           </>
-        )}
+          );
+        })()}
       </ScrollView>
 
       {/* Lista de espécies (abre de baixo para cima) */}
@@ -1034,7 +1137,7 @@ export default function PrivatePetsFlowScreen({
 
       {!!successMessage && (
         <View style={styles.toastCard}>
-          <Ionicons name="checkmark-circle" size={19} color="#10B981" />
+          <Icon name="checkmark-circle" size={19} color="#10B981" />
           <Text style={styles.toastText}>{successMessage}</Text>
         </View>
       )}
@@ -1599,112 +1702,114 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
   },
-  profilePetHeader: {
-    alignItems: 'center',
-    paddingVertical: 18,
-  },
-  profilePetName: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginTop: 12,
-  },
-  profilePetSubtitle: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 4,
-  },
-  profilePetPlan: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#183C98',
-    marginTop: 8,
-  },
-  profileTabs: {
+  // ---- Perfil do pet ----
+  profilePetHeader: { alignItems: 'center', paddingTop: 12, paddingBottom: 16 },
+  profilePetName: { fontSize: 21, fontFamily: TF.bold, color: T.navy, marginTop: 12 },
+  profilePetSubtitle: { fontSize: 12, fontFamily: TF.regular, color: T.muted, marginTop: 4 },
+  planPill: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    marginBottom: 16,
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#FFF4DE',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    marginTop: 10,
   },
-  profileTab: {
+  planPillEmpty: { backgroundColor: T.primarySoft },
+  planPillText: { fontSize: 12, fontFamily: TF.bold, color: '#B7791F' },
+  statsRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+  statTile: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  profileTabActive: {
-    borderBottomColor: '#183C98',
-  },
-  profileTabText: {
-    fontSize: 12,
-    color: '#64748B',
-    fontWeight: '600',
-  },
-  profileTabTextActive: {
-    color: '#183C98',
-    fontWeight: '800',
-  },
-  detailCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: T.card,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: T.border,
+    borderRadius: theme.radius.card,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
   },
-  detailTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 12,
+  statValue: { fontSize: 14, fontFamily: TF.bold, color: T.navy, marginTop: 6 },
+  statLabel: { fontSize: 11, fontFamily: TF.regular, color: T.muted, marginTop: 1 },
+  profileTabs: {
+    flexDirection: 'row',
+    backgroundColor: '#EAEFF7',
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 14,
   },
-  detailRow: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+  profileTab: { flex: 1, alignItems: 'center', paddingVertical: 9, borderRadius: 9 },
+  profileTabActive: {
+    backgroundColor: T.card,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  detailLabel: {
-    fontSize: 11,
-    color: '#94A3B8',
-    marginBottom: 3,
+  profileTabText: { fontSize: 13, fontFamily: TF.medium, color: T.muted },
+  profileTabTextActive: { fontFamily: TF.bold, color: T.primary },
+  detailCard: {
+    backgroundColor: T.card,
+    borderRadius: theme.radius.bigCard,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: T.border,
   },
-  detailValue: {
-    fontSize: 13,
-    color: '#1E293B',
-    fontWeight: '600',
+  detailTitle: { fontSize: 15, fontFamily: TF.bold, color: T.navy, marginBottom: 8 },
+  bioText: { fontSize: 13, fontFamily: TF.regular, color: T.textSecondary, lineHeight: 20 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10 },
+  infoRowDivider: { borderBottomWidth: 1, borderBottomColor: T.divider },
+  infoRowIcon: { width: 30, height: 30, borderRadius: 10, backgroundColor: T.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  infoRowLabel: { fontSize: 12, fontFamily: TF.regular, color: T.muted },
+  infoRowValue: { flex: 1, textAlign: 'right', fontSize: 13, fontFamily: TF.semibold, color: T.navy },
+  quotaText: { fontSize: 12, fontFamily: TF.bold, color: T.success },
+  statusPill: { borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3 },
+  statusPillText: { fontSize: 11, fontFamily: TF.bold },
+  linkButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingTop: 12 },
+  linkButtonText: { fontSize: 13, fontFamily: TF.bold, color: T.primary },
+  inlineButton: {
+    alignSelf: 'stretch',
+    minHeight: 44,
+    flexDirection: 'row',
+    gap: 8,
+    borderRadius: theme.radius.button,
+    backgroundColor: T.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 14,
   },
+  inlineButtonText: { fontSize: 13, fontFamily: TF.bold, color: '#FFFFFF' },
+  // Usados por DetailRow (outras telas do fluxo)
+  detailRow: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: T.divider },
+  detailLabel: { fontSize: 11, fontFamily: TF.regular, color: T.muted, marginBottom: 3 },
+  detailValue: { fontSize: 13, fontFamily: TF.semibold, color: T.navy },
   emptyDetailCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: T.card,
+    borderRadius: theme.radius.bigCard,
+    padding: 20,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: T.border,
   },
-  emptyDetailText: {
-    fontSize: 12,
-    color: '#64748B',
-    textAlign: 'center',
-    marginTop: 10,
-    lineHeight: 18,
-  },
+  emptyIcon: { width: 52, height: 52, borderRadius: 26, backgroundColor: T.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  emptyDetailTitle: { fontSize: 15, fontFamily: TF.bold, color: T.navy, marginTop: 10 },
+  emptyDetailText: { fontSize: 12, fontFamily: TF.regular, color: T.muted, textAlign: 'center', marginTop: 4, lineHeight: 18 },
   secondaryBtn: {
     height: 48,
-    borderRadius: 14,
+    borderRadius: theme.radius.button,
     borderWidth: 1,
-    borderColor: '#BFDBFE',
-    backgroundColor: '#EFF6FF',
+    borderColor: T.border,
+    backgroundColor: T.card,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 16,
+    marginTop: 14,
+    marginBottom: 8,
   },
-  secondaryBtnText: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#183C98',
-  },
+  secondaryBtnText: { fontSize: 14, fontFamily: TF.bold, color: T.primary },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',

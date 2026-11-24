@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '../theme/privateTheme';
+import { IconMC } from './AppIcon';
 
 // Foto do pet. Sem foto, mostra o ícone da espécie:
 // Cachorro → cachorro, Gato → gato, Ave → pássaro, Outro → patinha.
@@ -34,7 +34,7 @@ export default function PetAvatar({
 
   return (
     <View style={[styles.fallback, shape, { backgroundColor: background }]}>
-      <MaterialCommunityIcons
+      <IconMC
         name={getSpeciesIcon(species)}
         size={Math.round(size * 0.55)}
         color={theme.colors.primary}

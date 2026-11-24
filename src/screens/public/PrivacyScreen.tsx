@@ -9,8 +9,8 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from '../../components/BottomNavigation';
+import { Icon } from '../../components/AppIcon';
 
 interface PrivacyScreenProps {
   onBack?: () => void;
@@ -40,7 +40,7 @@ export default function PrivacyScreen({
           onPress={onBack || onNavigateToProfile}
           activeOpacity={0.7}
         >
-          <Ionicons name="chevron-back" size={24} color="#21479B" />
+          <Icon name="chevron-back" size={24} color="#21479B" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Política e Privacidade</Text>
         <View style={{ width: 24 }} />
@@ -67,13 +67,13 @@ export default function PrivacyScreen({
           ].map((topic, index) => (
             <TouchableOpacity key={index} style={styles.topicCard} activeOpacity={0.7}>
               <View style={styles.topicIconBadge}>
-                <Ionicons name={topic.icon as any} size={20} color="#21479B" />
+                <Icon name={topic.icon as any} size={20} color="#21479B" />
               </View>
               <View style={styles.topicInfo}>
                 <Text style={styles.topicTitle}>{topic.title}</Text>
                 <Text style={styles.topicDesc}>{topic.desc}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+              <Icon name="chevron-forward" size={18} color="#94A3B8" />
             </TouchableOpacity>
           ))}
         </View>

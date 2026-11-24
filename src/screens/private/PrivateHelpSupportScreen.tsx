@@ -13,10 +13,11 @@ import {
   Platform,
   UIManager,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import { theme } from '../../theme/privateTheme';
+import { IconMC } from '../../components/AppIcon';
 
 // Número do WhatsApp do atendimento (DDI + DDD + número, só dígitos).
 // TROQUE pelo número real da PetVitaliz.
@@ -196,7 +197,7 @@ export default function PrivateHelpSupportScreen({
           </View>
 
           <TouchableOpacity style={styles.whatsButton} onPress={openWhatsApp} activeOpacity={0.85}>
-            <MaterialCommunityIcons name="whatsapp" size={18} color={C.navy} />
+            <IconMC name="whatsapp" size={18} color={C.navy} />
             <Text style={styles.whatsText}>Falar no WhatsApp</Text>
           </TouchableOpacity>
         </View>

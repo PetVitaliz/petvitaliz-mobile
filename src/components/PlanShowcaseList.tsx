@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { theme } from '../theme/privateTheme';
 import {
   PLAN_ORDER,
@@ -13,6 +13,7 @@ import {
   type BillingCycle,
 } from '../data/planCoverage';
 import { usePlanCatalog } from '../data/planCatalog';
+import { IconMC } from './AppIcon';
 
 // Vitrine de planos (mesmo visual da área logada): coroa com fundo da cor
 // do nível, um card aberto por vez e botão com o valor.
@@ -84,7 +85,7 @@ export default function PlanShowcaseList({ onChoose, initialPlanId = 'ouro' }: P
               activeOpacity={0.8}
             >
               <View style={[styles.crown, { backgroundColor: PLAN_TIER[id].color }]}>
-                <MaterialCommunityIcons name="crown" size={19} color="#FFFFFF" />
+                <IconMC name="crown" size={19} color="#FFFFFF" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{name}</Text>

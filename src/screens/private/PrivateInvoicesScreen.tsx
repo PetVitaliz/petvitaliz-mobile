@@ -390,4 +390,4 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 9,
   },
-});
+});

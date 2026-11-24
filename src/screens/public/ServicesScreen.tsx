@@ -10,9 +10,9 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { PLAN_NAMES, PLAN_ORDER, getMonthlyPrice } from '../../data/planCoverage';
 import { usePlanCatalog } from '../../data/planCatalog';
+import { Icon } from '../../components/AppIcon';
 
 const HIGHLIGHTED_PLAN = 'ouro';
 
@@ -40,7 +40,7 @@ export default function ServicesScreen({
       {/* Topo / Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={24} color="#21479B" />
+          <Icon name="chevron-back" size={24} color="#21479B" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nossos Serviços</Text>
         <View style={{ width: 24 }} />
@@ -134,7 +134,7 @@ export default function ServicesScreen({
 
         {/* Link Dúvidas */}
         <TouchableOpacity style={styles.helpLinkContainer} activeOpacity={0.7}>
-          <Ionicons name="time-outline" size={16} color="#7B8497" />
+          <Icon name="time-outline" size={16} color="#7B8497" />
           <Text style={styles.helpLinkText}>Ficou com dúvidas? Fale conosco</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -142,7 +142,7 @@ export default function ServicesScreen({
       {/* Menu de Navegação Inferior (Bottom Bar) */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomTab} onPress={onBack} activeOpacity={0.7}>
-          <Ionicons name="home-outline" size={22} color="#94A3B8" />
+          <Icon name="home-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Início</Text>
         </TouchableOpacity>
 
@@ -152,7 +152,7 @@ export default function ServicesScreen({
           onPress={onNavigateToExplore}
           activeOpacity={0.7}
         >
-          <Ionicons name="search-outline" size={22} color="#94A3B8" />
+          <Icon name="search-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Explorar</Text>
         </TouchableOpacity>
 
@@ -166,12 +166,12 @@ export default function ServicesScreen({
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.bottomTab} activeOpacity={0.7}>
-          <Ionicons name="gift-outline" size={22} color="#94A3B8" />
+          <Icon name="gift-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Benefícios</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.bottomTab} onPress={onNavigateToLogin} activeOpacity={0.7}>
-          <Ionicons name="person-outline" size={22} color="#94A3B8" />
+          <Icon name="person-outline" size={22} color="#94A3B8" />
           <Text style={styles.bottomTabText}>Perfil</Text>
         </TouchableOpacity>
       </View>

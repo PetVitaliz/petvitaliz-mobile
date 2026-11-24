@@ -11,8 +11,8 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { errorMessage, notify } from '../../utils/notify';
+import { Icon } from '../../components/AppIcon';
 
 interface LoginScreenProps {
   onLoginSuccess?: () => void;
@@ -22,9 +22,11 @@ interface LoginScreenProps {
   onNavigateToTerms?: () => void;
   onNavigateToPrivacy?: () => void;
   onBack?: () => void;
+  initialEmail?: string; // vem preenchido depois do cadastro
 }
 
 export default function LoginScreen({
+  initialEmail,
   onLoginSuccess,
   onSubmit,
   onNavigateToRegister,
@@ -33,7 +35,7 @@ export default function LoginScreen({
   onNavigateToPrivacy,
   onBack,
 }: LoginScreenProps) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(initialEmail ?? '');
   const [senha, setSenha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -84,7 +86,7 @@ export default function LoginScreen({
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Icon name="chevron-back" size={26} color="#FFFFFF" />
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
@@ -134,7 +136,7 @@ export default function LoginScreen({
               onPress={() => setShowPassword(!showPassword)}
               activeOpacity={0.7}
             >
-              <Ionicons
+              <Icon
                 name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                 size={20}
                 color="#7B8497"

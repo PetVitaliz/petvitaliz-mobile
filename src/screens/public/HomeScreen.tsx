@@ -12,12 +12,14 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { PLAN_TIER } from '../../components/PlanShowcaseList';
+import PlanBannerCarousel from '../../components/PlanBannerCarousel';
 import BottomNavigation from '../../components/BottomNavigation';
 import { theme } from '../../theme/privateTheme';
 import { SERVICES, PLAN_ORDER, PLAN_NAMES, getMonthlyPrice, type PlanId } from '../../data/planCoverage';
 import { usePlanCatalog } from '../../data/planCatalog';
+import { IconMC } from '../../components/AppIcon';
 
 interface HomeScreenProps {
   onNavigateToHome?: () => void;
@@ -35,17 +37,7 @@ interface HomeScreenProps {
 }
 
 const { width } = Dimensions.get('window');
-const BANNER_WIDTH = width - 36;
-const BANNER_GAP = 12;
 const SERVICE_WIDTH = width * 0.62;
-
-const BANNER_PLANS: PlanId[] = ['bronze', 'prata', 'ouro', 'diamante'];
-const BANNERS = [
-  require('../../assets/Plano-Bronze.png'),
-  require('../../assets/Plano-Prata.png'),
-  require('../../assets/Plano-Ouro.png'),
-  require('../../assets/Plano-Diamante.png'),
-];
 
 const C = theme.colors;
 const F = theme.fonts;
@@ -62,20 +54,6 @@ export default function HomeScreen({
   onOpenPlans,
 }: HomeScreenProps) {
   usePlanCatalog();
-  const bannerRef = useRef<any>(null);
-  const [bannerIndex, setBannerIndex] = useState(0);
-
-  // Troca de banner sozinha a cada 5 segundos.
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setBannerIndex((current) => {
-        const next = (current + 1) % BANNERS.length;
-        bannerRef.current?.scrollTo({ x: next * (BANNER_WIDTH + BANNER_GAP), animated: true });
-        return next;
-      });
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,33 +70,8 @@ export default function HomeScreen({
           </TouchableOpacity>
         </View>
 
-        {/* Banners clicáveis */}
-        <ScrollView
-          ref={bannerRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={BANNER_WIDTH + BANNER_GAP}
-          decelerationRate="fast"
-          contentContainerStyle={styles.bannerRow}
-          onMomentumScrollEnd={(e) =>
-            setBannerIndex(Math.round(e.nativeEvent.contentOffset.x / (BANNER_WIDTH + BANNER_GAP)))
-          }
-        >
-          {BANNERS.map((banner, index) => (
-            <TouchableOpacity
-              key={BANNER_PLANS[index]}
-              activeOpacity={0.92}
-              onPress={() => (onChoosePlan ? onChoosePlan(BANNER_PLANS[index]) : onNavigateToPlans?.())}
-            >
-              <Image source={banner} style={styles.banner} resizeMode="cover" />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <View style={styles.dots}>
-          {BANNERS.map((_, i) => (
-            <View key={i} style={[styles.dot, bannerIndex === i && styles.dotActive]} />
-          ))}
-        </View>
+        {/* Banners clicáveis (mesmo carrossel da home logada) */}
+        <PlanBannerCarousel onPressPlan={(planId) => (onChoosePlan ? onChoosePlan(planId) : onNavigateToPlans?.())} />
 
         {/* Vantagens (rodapé dos banners) */}
         <View style={styles.perks}>
@@ -128,7 +81,7 @@ export default function HomeScreen({
             { icon: 'hours-24' as const, text: 'Atendimento 24h' },
           ].map((perk) => (
             <View key={perk.text} style={styles.perk}>
-              <MaterialCommunityIcons name={perk.icon} size={20} color={C.primary} />
+              <IconMC name={perk.icon} size={20} color={C.primary} />
               <Text style={styles.perkText}>{perk.text}</Text>
             </View>
           ))}
@@ -155,7 +108,7 @@ export default function HomeScreen({
                 </View>
               )}
               <View style={[styles.planCrown, { backgroundColor: PLAN_TIER[id].color }]}>
-                <MaterialCommunityIcons name="crown" size={17} color="#FFFFFF" />
+                <IconMC name="crown" size={17} color="#FFFFFF" />
               </View>
               <Text style={styles.planName}>{PLAN_NAMES[id].replace('Plano ', '')}</Text>
               <Text style={styles.planPrice}>
@@ -248,11 +201,6 @@ const styles = StyleSheet.create({
   loginButton: { backgroundColor: C.brandYellow, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 9 },
   loginText: { fontSize: 13, fontFamily: F.bold, color: C.navy },
 
-  bannerRow: { paddingHorizontal: 18, gap: BANNER_GAP },
-  banner: { width: BANNER_WIDTH, height: BANNER_WIDTH / 2, borderRadius: 18 },
-  dots: { flexDirection: 'row', justifyContent: 'center', gap: 5, marginTop: 10 },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#C9D3E3' },
-  dotActive: { width: 18, backgroundColor: C.primary },
 
   perks: { flexDirection: 'row', gap: 8, marginHorizontal: 18, marginTop: 14 },
   perk: { flex: 1, alignItems: 'center', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 12, paddingVertical: 9, gap: 3 },

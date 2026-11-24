@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Image, Easing, Dimensions, StatusBar } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { IconMC } from '../../components/AppIcon';
 
 interface SplashScreenProps {
   onFinish?: () => void;
@@ -98,7 +98,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
             },
           ]}
         >
-          <MaterialCommunityIcons name="paw" size={PAW_SIZE} color="#FFFFFF" />
+          <IconMC name="paw" size={PAW_SIZE} color="#FFFFFF" />
         </Animated.View>
       ))}
 
@@ -129,7 +129,8 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   logoCircle: { alignItems: 'center', justifyContent: 'center' },
   logoIcon: { width: 110, height: 100 },
-  wordmark: { width: 200, height: 42, marginTop: 22 },
+  // Logo com a mesma fonte do site (proporção 670x112)
+  wordmark: { width: 230, height: 38, marginTop: 22 },
   tagline: {
     marginTop: 12,
     color: '#FFFFFF',

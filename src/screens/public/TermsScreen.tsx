@@ -9,8 +9,8 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from '../../components/BottomNavigation';
+import { Icon } from '../../components/AppIcon';
 
 interface TermsScreenProps {
   onBack?: () => void;
@@ -40,7 +40,7 @@ export default function TermsScreen({
           onPress={onBack || onNavigateToProfile}
           activeOpacity={0.7}
         >
-          <Ionicons name="chevron-back" size={24} color="#21479B" />
+          <Icon name="chevron-back" size={24} color="#21479B" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Termos de Uso</Text>
         <View style={{ width: 24 }} />
@@ -86,7 +86,7 @@ export default function TermsScreen({
 
         <TouchableOpacity style={styles.moreButton} activeOpacity={0.8}>
           <Text style={styles.moreButtonText}>Ver todos os termos</Text>
-          <Ionicons name="chevron-down" size={16} color="#21479B" />
+          <Icon name="chevron-down" size={16} color="#21479B" />
         </TouchableOpacity>
       </ScrollView>
 

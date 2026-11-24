@@ -12,8 +12,8 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { errorMessage, notify } from '../../utils/notify';
+import { Icon } from '../../components/AppIcon';
 
 interface ResetPasswordScreenProps {
   onNavigateToLogin?: () => void;
@@ -78,7 +78,7 @@ export default function ResetPasswordScreen({
             onPress={onBack}
             activeOpacity={0.7}
           >
-            <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+            <Icon name="chevron-back" size={26} color="#FFFFFF" />
           </TouchableOpacity>
         )}
 
@@ -122,7 +122,7 @@ export default function ResetPasswordScreen({
                   <TouchableOpacity
                     onPress={() => setShowNewPassword(!showNewPassword)}
                   >
-                    <Ionicons
+                    <Icon
                       name={showNewPassword ? 'eye-outline' : 'eye-off-outline'}
                       size={20}
                       color="#7B8497"
@@ -145,7 +145,7 @@ export default function ResetPasswordScreen({
                   <TouchableOpacity
                     onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    <Ionicons
+                    <Icon
                       name={
                         showConfirmPassword ? 'eye-outline' : 'eye-off-outline'
                       }
@@ -161,7 +161,7 @@ export default function ResetPasswordScreen({
               </Text>
               <View style={styles.requirementsGrid}>
                 <View style={styles.reqItem}>
-                  <Ionicons
+                  <Icon
                     name="checkmark-circle"
                     size={16}
                     color={hasMinLen ? '#2E7D32' : '#CBD5E1'}
@@ -176,7 +176,7 @@ export default function ResetPasswordScreen({
                   </Text>
                 </View>
                 <View style={styles.reqItem}>
-                  <Ionicons
+                  <Icon
                     name="checkmark-circle"
                     size={16}
                     color={hasNumber ? '#2E7D32' : '#CBD5E1'}
@@ -191,7 +191,7 @@ export default function ResetPasswordScreen({
                   </Text>
                 </View>
                 <View style={styles.reqItem}>
-                  <Ionicons
+                  <Icon
                     name="checkmark-circle"
                     size={16}
                     color={hasUpper ? '#2E7D32' : '#CBD5E1'}
@@ -206,7 +206,7 @@ export default function ResetPasswordScreen({
                   </Text>
                 </View>
                 <View style={styles.reqItem}>
-                  <Ionicons
+                  <Icon
                     name="checkmark-circle"
                     size={16}
                     color={hasLower ? '#2E7D32' : '#CBD5E1'}
@@ -235,7 +235,7 @@ export default function ResetPasswordScreen({
             <>
               <View style={styles.centerIconContainer}>
                 <View style={styles.checkCircle}>
-                  <Ionicons name="checkmark" size={36} color="#FFFFFF" />
+                  <Icon name="checkmark" size={36} color="#FFFFFF" />
                 </View>
                 <Text style={styles.innerTitle}>Senha alterada!</Text>
                 <Text style={styles.innerSubtitle}>
@@ -253,7 +253,7 @@ export default function ResetPasswordScreen({
 
               <View style={styles.infoCard}>
                 <View style={styles.infoIconBadge}>
-                  <Ionicons
+                  <Icon
                     name="shield-checkmark-outline"
                     size={22}
                     color="#21479B"

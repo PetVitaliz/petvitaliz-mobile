@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
     fontFamily: theme.fonts.bold,
     color: theme.colors.navy,
   },
-});
+});

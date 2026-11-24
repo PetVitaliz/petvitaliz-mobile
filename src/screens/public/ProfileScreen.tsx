@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import PrivateHeader from '../../components/PrivateHeader';
 import BottomNavigation from '../../components/BottomNavigation';
 import { theme } from '../../theme/privateTheme';
+import { IconMC } from '../../components/AppIcon';
 
 interface ProfileScreenProps {
   onBack?: () => void;
@@ -46,7 +47,7 @@ export default function ProfileScreen({
         <View style={styles.hero}>
           <View style={styles.heroCircle} />
           <View style={styles.avatar}>
-            <MaterialCommunityIcons name="paw" size={28} color={C.navy} />
+            <IconMC name="paw" size={28} color={C.navy} />
           </View>
           <Text style={styles.heroTitle}>Olá!</Text>
           <Text style={styles.heroText}>Entre para cuidar dos seus pets e planos.</Text>

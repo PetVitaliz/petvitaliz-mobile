@@ -9,7 +9,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../components/AppIcon';
 
 interface EmailSentScreenProps {
   email?: string;
@@ -44,7 +44,7 @@ export default function EmailSentScreen({
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Icon name="chevron-back" size={26} color="#FFFFFF" />
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
@@ -65,7 +65,7 @@ export default function EmailSentScreen({
       <View style={styles.card}>
         <View style={styles.centerIconContainer}>
           <View style={styles.checkCircle}>
-            <Ionicons name="checkmark" size={36} color="#FFFFFF" />
+            <Icon name="checkmark" size={36} color="#FFFFFF" />
           </View>
           <Text style={styles.innerTitle}>E-mail enviado!</Text>
           <Text style={styles.innerSubtitle}>
@@ -90,7 +90,7 @@ export default function EmailSentScreen({
 
         <View style={styles.infoCard}>
           <View style={styles.infoIconBadge}>
-            <Ionicons name="mail-outline" size={22} color="#21479B" />
+            <Icon name="mail-outline" size={22} color="#21479B" />
           </View>
           <Text style={styles.infoText}>
             Não encontrou o e-mail? Verifique também a caixa de spam.

@@ -13,7 +13,6 @@ import {
   Modal,
   Platform,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import { getSpeciesIcon } from '../../components/PetAvatar';
 import type { Pet } from './PrivatePetsFlowScreen';
@@ -26,6 +25,7 @@ import {
   type ServiceInfo,
   type ServiceId,
 } from '../../data/planCoverage';
+import { Icon, IconMC } from '../../components/AppIcon';
 
 interface PrivateServicesScreenProps {
   onBack?: () => void;
@@ -78,7 +78,7 @@ export default function PrivateServicesScreen({
       <Image source={{ uri: pet.avatar }} style={styles.petAvatar} />
     ) : (
       <View style={styles.petAvatarPlaceholder}>
-        <MaterialCommunityIcons name={getSpeciesIcon(pet.species)} size={24} color="#183C98" />
+        <IconMC name={getSpeciesIcon(pet.species)} size={24} color="#183C98" />
       </View>
     );
 
@@ -88,7 +88,7 @@ export default function PrivateServicesScreen({
 
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Ionicons name="chevron-back" size={24} color="#183C98" />
+          <Icon name="chevron-back" size={24} color="#183C98" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Serviços</Text>
         <View style={{ width: 30 }} />
@@ -97,7 +97,7 @@ export default function PrivateServicesScreen({
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {pets.length === 0 ? (
           <View style={styles.noPetCard}>
-            <Ionicons name="paw-outline" size={30} color="#183C98" />
+            <Icon name="paw-outline" size={30} color="#183C98" />
             <Text style={styles.emptyTitle}>Nenhum pet cadastrado</Text>
             <Text style={styles.emptyDescription}>
               Cadastre um pet para ver os serviços disponíveis no plano dele.
@@ -126,7 +126,7 @@ export default function PrivateServicesScreen({
                 </Text>
               </View>
               {pets.length > 1 && (
-                <Ionicons
+                <Icon
                   name={petPickerOpen ? 'chevron-up' : 'chevron-down'}
                   size={21}
                   color="#183C98"
@@ -153,7 +153,7 @@ export default function PrivateServicesScreen({
                       </Text>
                     </View>
                     {pet.id === selectedPet?.id && (
-                      <Ionicons name="checkmark-circle" size={20} color="#183C98" />
+                      <Icon name="checkmark-circle" size={20} color="#183C98" />
                     )}
                   </TouchableOpacity>
                 ))}
@@ -177,7 +177,7 @@ export default function PrivateServicesScreen({
 
             {/* Busca */}
             <View style={styles.searchBox}>
-              <Ionicons name="search-outline" size={18} color="#94A3B8" />
+              <Icon name="search-outline" size={18} color="#94A3B8" />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Buscar serviço"
@@ -197,12 +197,12 @@ export default function PrivateServicesScreen({
                   <>
                     {!service.image && (
                       <View style={styles.cardIcon}>
-                        <Ionicons name={service.icon} size={40} color="#183C98" />
+                        <Icon name={service.icon} size={40} color="#183C98" />
                       </View>
                     )}
                     {locked && (
                       <View style={styles.lockBadge}>
-                        <Ionicons name="lock-closed" size={14} color="#FFFFFF" />
+                        <Icon name="lock-closed" size={14} color="#FFFFFF" />
                       </View>
                     )}
                     <View style={styles.cardOverlay}>
@@ -260,7 +260,7 @@ export default function PrivateServicesScreen({
         <View style={styles.sheetOverlay}>
           <View style={styles.sheet}>
             <View style={styles.sheetIcon}>
-              <Ionicons name="lock-closed" size={26} color="#183C98" />
+              <Icon name="lock-closed" size={26} color="#183C98" />
             </View>
             <Text style={styles.sheetTitle}>{lockedService?.name}</Text>
             <Text style={styles.sheetText}>

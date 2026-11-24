@@ -17,8 +17,9 @@ import {
   TextInput,
   Keyboard,
 } from 'react-native';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { theme } from '../../theme/privateTheme';
+import PlanBannerCarousel from '../../components/PlanBannerCarousel';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PetAvatar from '../../components/PetAvatar';
 import type { Pet } from './PrivatePetsFlowScreen';
@@ -33,6 +34,7 @@ import {
 } from '../../data/planCoverage';
 import { usePlanCatalog } from '../../data/planCatalog';
 import type { ConsultationAppointment } from './PrivateConsultationsScreen';
+import { Icon, IconMC } from '../../components/AppIcon';
 
 // Dados de cobrança do plano contratado (para mostrar a renovação).
 type HomeSubscription = {
@@ -83,28 +85,12 @@ interface ServiceSlide {
 
 const { width } = Dimensions.get('window');
 
-const BANNER_WIDTH = width - 40;
-const BANNER_GAP = 16;
 const SERVICE_WIDTH = width * 0.7;
 const SERVICE_GAP = 12;
 
 const PRIMARY = '#183C98';
 const BACKGROUND = '#F6F8FC';
 const PALE_BLUE = '#E8EEFA';
-
-// Plano de cada banner, na mesma ordem da lista abaixo.
-const BANNER_PLAN_IDS: PlanId[] = ['bronze', 'prata', 'ouro', 'diamante'];
-const BANNER_FEATURE_LIMIT = 3;
-
-const formatBannerPrice = (value: number) =>
-  value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-const BANNERS: ImageSourcePropType[] = [
-  require('../../assets/Plano-Bronze.png'),
-  require('../../assets/Plano-Prata.png'),
-  require('../../assets/Plano-Ouro.png'),
-  require('../../assets/Plano-Diamante.png'),
-];
 
 const SERVICES: ServiceSlide[] = [
   {
@@ -202,9 +188,6 @@ export default function PrivateHomeScreen({
     : []; 
 
   // Carrossel de banners
-  const bannerRef = useRef<any>(null);
-  const [bannerIndex, setBannerIndex] = useState(0);
-  const totalBanners = BANNERS.length;
   usePlanCatalog();
 
   // Carrossel de serviços
@@ -219,24 +202,6 @@ export default function PrivateHomeScreen({
       action?.();
     }, 250);
   };
-
-  // Rotação automática dos banners
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setBannerIndex((prev) => {
-        const next = (prev + 1) % totalBanners;
-
-        bannerRef.current?.scrollTo({
-          x: next * (BANNER_WIDTH + BANNER_GAP),
-          animated: true,
-        });
-
-        return next;
-      });
-    }, 4000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   // Rotação automática dos serviços
   useEffect(() => {
@@ -269,12 +234,12 @@ export default function PrivateHomeScreen({
       onPress={() => handleMenuNavigation(action)}
     >
       <View style={styles.menuItemIcon}>
-        <Ionicons name={icon} size={20} color={PRIMARY} />
+        <Icon name={icon} size={20} color={PRIMARY} />
       </View>
 
       <Text style={styles.menuItemText}>{title}</Text>
 
-      <Ionicons
+      <Icon
         name="chevron-forward"
         size={18}
         color="#A0A9B8"
@@ -310,7 +275,7 @@ export default function PrivateHomeScreen({
 
         {searchVisible ? (
           <View style={styles.searchInputContainer}>
-            <Ionicons name="search-outline" size={19} color="#64748B" />
+            <Icon name="search-outline" size={19} color="#64748B" />
             <TextInput
               style={styles.searchInput}
               value={searchQuery}
@@ -334,7 +299,7 @@ export default function PrivateHomeScreen({
                 }}
                 hitSlop={8}
               >
-                <Ionicons name="close-circle" size={18} color="#94A3B8" />
+                <Icon name="close-circle" size={18} color="#94A3B8" />
               </TouchableOpacity>
             )}
             <TouchableOpacity
@@ -347,7 +312,7 @@ export default function PrivateHomeScreen({
               hitSlop={8}
               style={styles.closeSearchButton}
             >
-              <Ionicons name="close" size={19} color="#475569" />
+              <Icon name="close" size={19} color="#475569" />
             </TouchableOpacity>
           </View>
         ) : (
@@ -367,7 +332,7 @@ export default function PrivateHomeScreen({
               activeOpacity={0.7}
               onPress={() => setSearchVisible(true)}
             >
-              <Ionicons name="search-outline" size={21} color="#0F172A" />
+              <Icon name="search-outline" size={21} color="#0F172A" />
             </TouchableOpacity>
           </>
         )}
@@ -377,7 +342,7 @@ export default function PrivateHomeScreen({
           activeOpacity={0.7}
           onPress={onNavigateToNotifications}
         >
-          <Ionicons
+          <Icon
             name="notifications-outline"
             size={22}
             color="#0F172A"
@@ -422,79 +387,9 @@ export default function PrivateHomeScreen({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* BANNERS */}
+        {/* BANNERS (mesmo carrossel da home pública) */}
         <View style={styles.bannerWrapper}>
-          <ScrollView
-            ref={bannerRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.bannerContainer}
-            onMomentumScrollEnd={(e) => {
-              setBannerIndex(
-                Math.round(
-                  e.nativeEvent.contentOffset.x /
-                  (BANNER_WIDTH + BANNER_GAP)
-                )
-              );
-            }}
-          >
-            {BANNERS.map((banner, index) => {
-              const planId = BANNER_PLAN_IDS[index];
-              return (
-                <TouchableOpacity
-                  key={`banner-${index}`}
-                  activeOpacity={0.92}
-                  onPress={() => onOpenPlan?.(planId)}
-                  style={styles.bannerCard}
-                >
-                  <Image source={banner} style={styles.bannerImage} resizeMode="cover" />
-                  <View style={styles.bannerPanel}>
-                    <View style={styles.bannerTag}>
-                      <MaterialCommunityIcons name="crown" size={10} color={PRIMARY} />
-                      <Text style={styles.bannerTagText} numberOfLines={1}>
-                        {PLAN_NAMES[planId].toUpperCase()}
-                      </Text>
-                    </View>
-                    <View style={styles.bannerFeatures}>
-                      {PLAN_FEATURES[planId].slice(0, BANNER_FEATURE_LIMIT).map((feature) => (
-                        <View key={feature.text} style={styles.bannerFeatureRow}>
-                          <Feather name="check-circle" size={10} color="#FBC531" />
-                          <Text style={styles.bannerFeatureText} numberOfLines={1}>
-                            {feature.count ? `${feature.text} ${feature.count}` : feature.text}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                    <Text style={styles.bannerPrice} numberOfLines={1}>
-                      {formatBannerPrice(getMonthlyPrice(planId, 'monthly'))}
-                      <Text style={styles.bannerPriceUnit}> /mês</Text>
-                    </Text>
-                    <Text style={styles.bannerYearly} numberOfLines={1}>
-                      ou {formatBannerPrice(getMonthlyPrice(planId, 'yearly'))}/mês no anual
-                    </Text>
-                    <View style={styles.bannerButton}>
-                      <Text style={styles.bannerButtonText}>Assine agora</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-
-          <View style={styles.paginationDots}>
-            {[...Array(totalBanners)].map((_, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.dot,
-                  bannerIndex === i
-                    ? styles.activeDot
-                    : styles.inactiveDot,
-                ]}
-              />
-            ))}
-          </View>
+          <PlanBannerCarousel onPressPlan={(planId) => onOpenPlan?.(planId)} />
         </View>
 
         {/* MEU PLANO */}
@@ -595,7 +490,7 @@ export default function PrivateHomeScreen({
                   {planId ? (
                     <>
                       <View style={styles.mpPlanRow}>
-                        <MaterialCommunityIcons name="crown-outline" size={19} color={T.warning} />
+                        <IconMC name="crown-outline" size={19} color={T.warning} />
                         <View style={{ flex: 1 }}>
                           <Text style={styles.mpPlanName}>{PLAN_NAMES[planId]}</Text>
                           <Text style={styles.mpPlanNote}>{renewal ? `Renova em ${renewal}` : 'Plano ativo'}</Text>
@@ -676,7 +571,7 @@ export default function PrivateHomeScreen({
                   <>
                     {!item.image && (
                       <View style={styles.serviceIconBig}>
-                        <Ionicons
+                        <Icon
                           name={item.icon}
                           size={56}
                           color={item.color}
@@ -751,7 +646,7 @@ export default function PrivateHomeScreen({
           onPress={onNavigateToSupport}
         >
           <View style={styles.supportIcon}>
-            <Ionicons
+            <Icon
               name="headset-outline"
               size={20}
               color={T.primary}
@@ -768,7 +663,7 @@ export default function PrivateHomeScreen({
             </Text>
           </View>
 
-          <Ionicons
+          <Icon
             name="chevron-forward"
             size={18}
             color="#FFFFFF"
@@ -782,7 +677,7 @@ export default function PrivateHomeScreen({
           onPress={onNavigateToSupport}
         >
           <View style={styles.ratingIcon}>
-            <Ionicons
+            <Icon
               name="star-outline"
               size={20}
               color="#E5A800"
@@ -801,7 +696,7 @@ export default function PrivateHomeScreen({
 
           <View style={styles.stars}>
             {[1, 2, 3, 4, 5].map((star) => (
-              <Ionicons
+              <Icon
                 key={star}
                 name="star-outline"
                 size={15}
@@ -810,7 +705,7 @@ export default function PrivateHomeScreen({
             ))}
           </View>
 
-          <Ionicons
+          <Icon
             name="chevron-forward"
             size={17}
             color="#94A3B8"
@@ -904,7 +799,7 @@ export default function PrivateHomeScreen({
                     onPress={() => handleMenuNavigation(item.onPress)}
                   >
                     <View style={styles.accShortcutIcon}>
-                      <MaterialCommunityIcons name={item.icon} size={19} color={T.primary} />
+                      <IconMC name={item.icon} size={19} color={T.primary} />
                     </View>
                     <Text style={styles.accShortcutTitle}>{item.title}</Text>
                     <Text style={styles.accShortcutNote}>{item.note}</Text>
@@ -1301,105 +1196,6 @@ const styles = StyleSheet.create({
   // BANNERS
   bannerWrapper: {
     marginTop: 8,
-  },
-
-  bannerContainer: {
-    paddingHorizontal: 20,
-    gap: BANNER_GAP,
-  },
-
-  bannerCard: {
-    width: BANNER_WIDTH,
-    height: 180,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-
-  bannerImage: {
-    width: BANNER_WIDTH,
-    height: 180,
-  },
-
-  bannerPanel: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: '55%',
-    backgroundColor: PRIMARY,
-    paddingVertical: 12,
-    paddingRight: 12,
-    paddingLeft: 6,
-    justifyContent: 'center',
-  },
-
-  bannerTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: 3,
-    maxWidth: '100%',
-    backgroundColor: '#FBC531',
-    borderRadius: 10,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-  },
-
-  bannerTagText: {
-    flexShrink: 1,
-    fontSize: 9,
-    fontWeight: '800',
-    color: PRIMARY,
-  },
-
-  bannerFeatures: {
-    marginTop: 8,
-    gap: 3,
-  },
-
-  bannerFeatureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-
-  bannerFeatureText: {
-    flex: 1,
-    fontSize: 10,
-    color: '#FFFFFF',
-  },
-
-  bannerPrice: {
-    marginTop: 8,
-    fontSize: 17,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-
-  bannerPriceUnit: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#7FD3F7',
-  },
-
-  bannerYearly: {
-    fontSize: 8.5,
-    color: '#7FD3F7',
-  },
-
-  bannerButton: {
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    backgroundColor: '#FBC531',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-
-  bannerButtonText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: PRIMARY,
   },
 
   paginationDots: {

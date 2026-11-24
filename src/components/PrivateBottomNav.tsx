@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Icon, IconMC } from './AppIcon';
 
 type PrivateRoute =
   | 'PrivateHome'
@@ -89,7 +89,7 @@ export default function PrivateBottomNav({
           label="Início"
           onPress={onNavigateToHome}
         >
-          <Ionicons
+          <Icon
             name={isHomeActive ? 'home' : 'home-outline'}
             size={20}
             color={isHomeActive ? ACTIVE_ICON_COLOR : INACTIVE_ICON_COLOR}
@@ -102,7 +102,7 @@ export default function PrivateBottomNav({
           label="Plano"
           onPress={onNavigateToPlans}
         >
-          <MaterialCommunityIcons
+          <IconMC
             name={isPlanActive ? 'crown' : 'crown-outline'}
             size={24} // a coroa é um desenho menor; 24 fica do tamanho visual dos outros ícones de 20
             color={isPlanActive ? ACTIVE_ICON_COLOR : INACTIVE_ICON_COLOR}
@@ -115,7 +115,7 @@ export default function PrivateBottomNav({
           label="Benefícios"
           onPress={onNavigateToBenefits}
         >
-          <Ionicons
+          <Icon
             name={isBenefitsActive ? 'gift' : 'gift-outline'}
             size={20}
             color={isBenefitsActive ? ACTIVE_ICON_COLOR : INACTIVE_ICON_COLOR}
@@ -128,7 +128,7 @@ export default function PrivateBottomNav({
           label="Perfil"
           onPress={onNavigateToProfile}
         >
-          <Ionicons
+          <Icon
             name={isProfileActive ? 'person' : 'person-outline'}
             size={20}
             color={isProfileActive ? ACTIVE_ICON_COLOR : INACTIVE_ICON_COLOR}
@@ -155,10 +155,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: '92%',
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 28, // folga da barrinha de gestos do celular
     borderRadius: 28,
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
@@ -175,17 +175,17 @@ const styles = StyleSheet.create({
   },
 
   tabContent: {
-    width: 76,
-    height: 56,
+    width: 64,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   // Bloco azul da aba ativa, com ícone e nome dentro
   activePill: {
-    width: 76,
-    height: 56,
-    borderRadius: 22,
+    width: 64,
+    height: 52,
+    borderRadius: 20,
     backgroundColor: '#183C98',
     alignItems: 'center',
     justifyContent: 'center',

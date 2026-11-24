@@ -12,6 +12,7 @@ import { Feather } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import PetAvatar from '../../components/PetAvatar';
+import SuccessCheck from '../../components/SuccessCheck';
 import { theme } from '../../theme/privateTheme';
 import { getAvailability } from '../../services/api';
 import { apiServiceFor } from '../../services/mappers';
@@ -781,33 +782,49 @@ export default function PrivateConsultationsScreen({
         {/* CONFIRMADO */}
         {mode === 'success' && lastSaved && (
           <View style={styles.successWrap}>
-            <View style={styles.successIcon}>
-              <Feather name="check" size={36} color="#FFFFFF" />
-            </View>
+            <SuccessCheck />
             <Text style={styles.successTitle}>{isRescheduling ? 'Consulta reagendada!' : 'Consulta agendada!'}</Text>
             <Text style={styles.successText}>
               {isRescheduling
-                ? 'A nova data já está salva.'
-                : `Tudo certo para ${lastSaved.petName}. O comprovante vai para o seu e-mail.`}
+                ? `A nova data de ${lastSaved.petName} já está salva.`
+                : `Tudo certo para ${lastSaved.petName}. Te esperamos na clínica!`}
             </Text>
-            <View style={styles.codeBadge}>
-              <Text style={styles.codeBadgeText}>Código {lastSaved.code}</Text>
+
+            <View style={[styles.card, styles.successCard]}>
+              <View style={styles.successCardTop}>
+                <Text style={styles.successCardTitle}>Resumo do agendamento</Text>
+                <View style={styles.codeBadge}>
+                  <Text style={styles.codeBadgeText}>{lastSaved.code}</Text>
+                </View>
+              </View>
+              <IconRow icon="heart" label="Pet" value={lastSaved.petName} />
+              <IconRow icon="clipboard" label="Serviço" value={serviceName(lastSaved.serviceId)} />
+              <IconRow icon="calendar" label="Data" value={longDate(lastSaved.date)} />
+              <IconRow icon="clock" label="Horário" value={lastSaved.time} />
+              <IconRow icon="user" label="Profissional" value={lastSaved.professional ?? 'Atribuído pela clínica'} last />
             </View>
-            <View style={[styles.card, { alignSelf: 'stretch', marginTop: 16 }]}>
-              <SummaryRow label="Serviço" value={serviceName(lastSaved.serviceId)} />
-              <SummaryRow label="Data" value={longDate(lastSaved.date)} />
-              <SummaryRow label="Horário" value={lastSaved.time} />
-              <SummaryRow label="Profissional" value={lastSaved.professional ?? 'Atribuído pela clínica'} />
+
+            <View style={[styles.infoBox, { alignSelf: 'stretch' }]}>
+              <Feather name="mail" size={15} color={C.navy} />
+              <Text style={styles.infoText}>
+                O comprovante vai para o seu e-mail. Dá para reagendar ou cancelar sem custo até 24h antes.
+              </Text>
             </View>
+
             <TouchableOpacity
-              style={[styles.primaryButton, { alignSelf: 'stretch' }]}
+              style={[styles.primaryButton, styles.rowButton, { alignSelf: 'stretch' }]}
+              activeOpacity={0.85}
               onPress={() => {
                 resetBooking();
                 setTab('proximas');
                 setMode('list');
               }}
             >
+              <Feather name="calendar" size={16} color="#FFFFFF" />
               <Text style={styles.primaryButtonText}>Meus agendamentos</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.successLink} activeOpacity={0.7} onPress={onNavigateToHome}>
+              <Text style={styles.successLinkText}>Voltar para o início</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -836,6 +853,19 @@ function StatusBadge({ status }: { status: ConsultationAppointment['status'] }) 
   return (
     <View style={[styles.statusBadge, { backgroundColor: config.bg }]}>
       <Text style={[styles.statusText, { color: config.color }]}>{config.label}</Text>
+    </View>
+  );
+}
+
+// Linha com ícone, usada no resumo da tela de sucesso
+function IconRow({ icon, label, value, last }: { icon: React.ComponentProps<typeof Feather>['name']; label: string; value: string; last?: boolean }) {
+  return (
+    <View style={[styles.iconRow, !last && styles.rowDivider]}>
+      <View style={styles.iconRowIcon}>
+        <Feather name={icon} size={15} color={C.primary} />
+      </View>
+      <Text style={styles.iconRowLabel}>{label}</Text>
+      <Text style={styles.iconRowValue} numberOfLines={2}>{value}</Text>
     </View>
   );
 }
@@ -1008,18 +1038,19 @@ const styles = StyleSheet.create({
   summaryPetPlan: { fontSize: 11, fontFamily: F.medium, color: C.success, marginTop: 2 },
 
   // Sucesso
-  successWrap: { alignItems: 'center', paddingTop: 20 },
-  successIcon: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: C.success,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  successTitle: { fontSize: 21, fontFamily: F.bold, color: C.navy, marginTop: 16 },
-  successText: { fontSize: 13, fontFamily: F.regular, color: C.muted, textAlign: 'center', marginTop: 6, lineHeight: 19 },
-  codeBadge: { backgroundColor: C.primarySoft, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 5, marginTop: 12 },
+  successWrap: { alignItems: 'center', paddingTop: 4, paddingBottom: 24 },
+  successTitle: { fontSize: 21, fontFamily: F.bold, color: C.navy, marginTop: 4 },
+  successText: { fontSize: 13, fontFamily: F.regular, color: C.muted, textAlign: 'center', marginTop: 6, lineHeight: 19, paddingHorizontal: 12 },
+  successCard: { alignSelf: 'stretch', marginTop: 20, paddingVertical: 6 },
+  successCardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8 },
+  successCardTitle: { fontSize: 14, fontFamily: F.bold, color: C.navy },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10 },
+  iconRowIcon: { width: 30, height: 30, borderRadius: 10, backgroundColor: C.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  iconRowLabel: { fontSize: 12, fontFamily: F.regular, color: C.muted },
+  iconRowValue: { flex: 1, textAlign: 'right', fontSize: 13, fontFamily: F.semibold, color: C.navy },
+  successLink: { paddingVertical: 14 },
+  successLinkText: { fontSize: 13, fontFamily: F.bold, color: C.primary },
+  codeBadge: { backgroundColor: C.primarySoft, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 },
   codeBadgeText: { fontSize: 12, fontFamily: F.bold, color: C.primary },
 
   // Botões
@@ -1044,4 +1075,4 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dangerButtonText: { color: C.danger, fontSize: 14, fontFamily: F.bold },
-});
+});

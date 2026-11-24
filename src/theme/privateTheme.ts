@@ -31,4 +31,4 @@ export const theme = {
     bigCard: 20,
     button: 12,
   },
-};
+};

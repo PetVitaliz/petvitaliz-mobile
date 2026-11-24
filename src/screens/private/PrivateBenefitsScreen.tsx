@@ -10,7 +10,7 @@ import {
   ImageSourcePropType,
   Dimensions,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import PetAvatar from '../../components/PetAvatar';
@@ -27,6 +27,7 @@ import {
   getPlanId,
   type PlanId,
 } from '../../data/planCoverage';
+import { IconMC } from '../../components/AppIcon';
 
 interface PrivateBenefitsScreenProps {
   onBack?: () => void;
@@ -165,7 +166,7 @@ export default function PrivateBenefitsScreen({
                     <Text style={styles.usageEyebrow}>Uso do mês · {selectedPet.name}</Text>
                     <Text style={styles.usageTitle}>{PLAN_NAMES[petPlan]}</Text>
                   </View>
-                  <MaterialCommunityIcons name="crown" size={26} color={C.brandYellow} />
+                  <IconMC name="crown" size={26} color={C.brandYellow} />
                 </View>
 
                 <View style={styles.usageGrid}>

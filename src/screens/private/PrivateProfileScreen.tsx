@@ -8,10 +8,11 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import { theme } from '../../theme/privateTheme';
+import { IconMC } from '../../components/AppIcon';
 
 interface PrivateProfileScreenProps {
   onBack?: () => void;
@@ -133,7 +134,7 @@ export default function PrivateProfileScreen({
           {shortcuts.map((item) => (
             <TouchableOpacity key={item.key} style={styles.shortcut} onPress={item.onPress} activeOpacity={0.8}>
               <View style={[styles.shortcutIcon, item.gold && { backgroundColor: '#E3A912' }]}>
-                <MaterialCommunityIcons name={item.icon} size={19} color={item.gold ? '#FFFFFF' : C.primary} />
+                <IconMC name={item.icon} size={19} color={item.gold ? '#FFFFFF' : C.primary} />
               </View>
               <Text style={styles.shortcutTitle}>{item.title}</Text>
               <Text style={styles.shortcutNote}>{item.note}</Text>

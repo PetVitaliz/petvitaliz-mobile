@@ -10,8 +10,8 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import BottomNavigation from '../../components/BottomNavigation';
+import { Icon } from '../../components/AppIcon';
 
 interface FaqScreenProps {
   onBack?: () => void;
@@ -43,7 +43,7 @@ export default function FaqScreen({
           onPress={onBack || onNavigateToProfile}
           activeOpacity={0.7}
         >
-          <Ionicons name="chevron-back" size={24} color="#21479B" />
+          <Icon name="chevron-back" size={24} color="#21479B" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FAQ</Text>
         <View style={{ width: 24 }} />
@@ -55,7 +55,7 @@ export default function FaqScreen({
       >
         {/* Barra de Pesquisa */}
         <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={18} color="#94A3B8" style={styles.searchIcon} />
+          <Icon name="search-outline" size={18} color="#94A3B8" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar dúvidas..."
@@ -77,13 +77,13 @@ export default function FaqScreen({
           ].map((cat, index) => (
             <TouchableOpacity key={index} style={styles.categoryCard} activeOpacity={0.7}>
               <View style={styles.categoryIconBadge}>
-                <Ionicons name={cat.icon as any} size={20} color="#21479B" />
+                <Icon name={cat.icon as any} size={20} color="#21479B" />
               </View>
               <View style={styles.categoryInfo}>
                 <Text style={styles.categoryTitle}>{cat.title}</Text>
                 <Text style={styles.categoryDesc}>{cat.desc}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
+              <Icon name="chevron-forward" size={18} color="#94A3B8" />
             </TouchableOpacity>
           ))}
         </View>
@@ -99,7 +99,7 @@ export default function FaqScreen({
           ].map((faq, index) => (
             <TouchableOpacity key={index} style={styles.faqItem} activeOpacity={0.7}>
               <Text style={styles.faqText}>{faq}</Text>
-              <Ionicons name="chevron-down" size={18} color="#21479B" />
+              <Icon name="chevron-down" size={18} color="#21479B" />
             </TouchableOpacity>
           ))}
         </View>

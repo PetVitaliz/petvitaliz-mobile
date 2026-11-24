@@ -567,4 +567,4 @@ const styles = StyleSheet.create({
   },
   noPlanBadge: { backgroundColor: '#FFF4DE', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 3, marginTop: 10 },
   noPlanBadgeText: { fontSize: 10, fontFamily: F.bold, color: C.warning },
-});
+});

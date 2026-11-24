@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import PrivateBottomNav from '../../components/PrivateBottomNav';
 import PrivateHeader from '../../components/PrivateHeader';
 import PetAvatar from '../../components/PetAvatar';
@@ -21,6 +21,7 @@ import {
   type BillingCycle,
   type PlanId,
 } from '../../data/planCoverage';
+import { IconMC } from '../../components/AppIcon';
 
 type PaymentMethod = 'card' | 'pix' | 'boleto';
 
@@ -186,7 +187,7 @@ export default function PrivateManagePlanScreen({
             <View style={styles.card}>
               <View style={styles.paymentRow}>
                 <View style={[styles.paymentIcon, { backgroundColor: payment.bg }]}>
-                  <MaterialCommunityIcons name={payment.icon} size={20} color={payment.color} />
+                  <IconMC name={payment.icon} size={20} color={payment.color} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.paymentLabel}>{payment.label}</Text>

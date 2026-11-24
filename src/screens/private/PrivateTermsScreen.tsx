@@ -188,4 +188,4 @@ const styles = StyleSheet.create({
   helpRow: { alignItems: 'center', paddingVertical: 18 },
   helpText: { fontSize: 13, fontFamily: F.regular, color: C.muted },
   helpLink: { fontFamily: F.bold, color: C.primary },
-});
+});

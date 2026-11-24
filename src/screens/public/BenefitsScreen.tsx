@@ -134,4 +134,4 @@ const styles = StyleSheet.create({
   featureCount: { fontSize: 12, fontFamily: F.semibold, color: C.muted },
   primaryButton: { minHeight: 48, borderRadius: 12, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', marginTop: 14 },
   primaryText: { color: '#FFFFFF', fontSize: 14, fontFamily: F.bold },
-});
+});

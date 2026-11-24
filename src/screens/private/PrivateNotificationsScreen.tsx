@@ -264,4 +264,4 @@ const styles = StyleSheet.create({
   emptyIcon: { width: 52, height: 52, borderRadius: 26, backgroundColor: C.primarySoft, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { fontSize: 15, fontFamily: F.bold, color: C.navy, marginTop: 10 },
   emptyText: { fontSize: 12, fontFamily: F.regular, color: C.muted, marginTop: 4, textAlign: 'center' },
-});
+});

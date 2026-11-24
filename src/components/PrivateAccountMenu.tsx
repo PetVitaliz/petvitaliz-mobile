@@ -11,6 +11,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './AppIcon';
 
 interface PrivateAccountMenuProps {
   visible: boolean;
@@ -68,12 +69,12 @@ export default function PrivateAccountMenu({
       onPress={() => navigate(action)}
     >
       <View style={styles.menuItemIcon}>
-        <Ionicons name={icon} size={20} color="#183C98" />
+        <Icon name={icon} size={20} color="#183C98" />
       </View>
 
       <Text style={styles.menuItemText}>{title}</Text>
 
-      <Ionicons
+      <Icon
         name="chevron-forward"
         size={18}
         color="#A0A9B8"
@@ -108,7 +109,7 @@ export default function PrivateAccountMenu({
               style={styles.closeButton}
               activeOpacity={0.7}
             >
-              <Ionicons name="close" size={22} color="#475569" />
+              <Icon name="close" size={22} color="#475569" />
             </TouchableOpacity>
           </View>
 
@@ -139,7 +140,7 @@ export default function PrivateAccountMenu({
                 <Text style={styles.viewProfile}>Ver meu perfil</Text>
               </View>
 
-              <Ionicons
+              <Icon
                 name="chevron-forward"
                 size={20}
                 color="#94A3B8"
@@ -156,7 +157,7 @@ export default function PrivateAccountMenu({
                 onPress={() => navigate(onNavigateToPets)}
               >
                 <View style={styles.shortcutIcon}>
-                  <Ionicons name="paw-outline" size={23} color="#183C98" />
+                  <Icon name="paw-outline" size={23} color="#183C98" />
                 </View>
                 <Text style={styles.shortcutTitle}>Meus Pets</Text>
                 <Text style={styles.shortcutSubtitle}>Animais cadastrados</Text>
@@ -168,7 +169,7 @@ export default function PrivateAccountMenu({
                 onPress={() => navigate(onNavigateToConsultations)}
               >
                 <View style={styles.shortcutIcon}>
-                  <Ionicons name="calendar-outline" size={23} color="#183C98" />
+                  <Icon name="calendar-outline" size={23} color="#183C98" />
                 </View>
                 <Text style={styles.shortcutTitle}>Consultas</Text>
                 <Text style={styles.shortcutSubtitle}>Meus agendamentos</Text>
@@ -221,7 +222,7 @@ export default function PrivateAccountMenu({
               activeOpacity={0.7}
               onPress={() => navigate(onLogout)}
             >
-              <Ionicons
+              <Icon
                 name="log-out-outline"
                 size={20}
                 color="#DC2626"

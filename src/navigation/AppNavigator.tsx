@@ -164,6 +164,7 @@ export default function AppNavigator() {
   const [userEmail, setUserEmail] = useState('');
   const [userPhone, setUserPhone] = useState('');
   const [userCpf, setUserCpf] = useState('');
+  const [loginEmail, setLoginEmail] = useState(''); // e-mail recém-cadastrado, para o login
   const [resetToken, setResetToken] = useState('');
   const [busyMessage, setBusyMessage] = useState('');
   const [userBirthDate, setUserBirthDate] = useState('');
@@ -425,7 +426,10 @@ export default function AppNavigator() {
       genero: 'O',
       data_nascimento: toIsoDate(data.birthDate),
     });
-    await signIn(data.email, data.password);
+    // Não entra direto: leva para o login, com o e-mail já preenchido
+    setLoginEmail(data.email);
+    goTo('Login');
+    notify('Conta criada!', 'Agora entre com seu e-mail e senha.');
   };
 
   const signOut = () => {
@@ -658,6 +662,7 @@ export default function AppNavigator() {
             onBack={back}
             onLoginSuccess={afterAuth}
             onSubmit={signIn}
+            initialEmail={loginEmail}
             onNavigateToRegister={() => goTo('Register')}
             onNavigateToForgotPassword={() => push('ForgotPassword')}
             onNavigateToTerms={() => push('Terms')}
@@ -1033,6 +1038,8 @@ export default function AppNavigator() {
             cards={savedCards}
             onCardsChange={setSavedCards}
             hasActivePlan={userPets.some((pet) => pet.hasActivePlan)}
+            userName={userName}
+            userCpf={userCpf}
           />
         );
 
@@ -1043,6 +1050,8 @@ export default function AppNavigator() {
             onBack={back}
             pets={userPets}
             onPetsChange={changePets}
+            appointments={appointments}
+            onOpenConsultations={(petId) => openConsultations(petId ? { petId } : null)}
             onContractPlan={(petId) => {
               setContractPetId(petId);
               setContractPlanId(null);
@@ -1166,4 +1175,4 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-});
+});

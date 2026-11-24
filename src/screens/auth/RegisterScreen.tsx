@@ -14,9 +14,9 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { errorMessage } from '../../utils/notify';
+import { Icon } from '../../components/AppIcon';
 
 interface RegisterScreenProps {
   onRegisterSuccess?: () => void;
@@ -230,7 +230,7 @@ export default function RegisterScreen({
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Icon name="chevron-back" size={26} color="#FFFFFF" />
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
@@ -259,7 +259,7 @@ export default function RegisterScreen({
         >
           {generalError ? (
             <View style={styles.errorBox}>
-              <Ionicons name="alert-circle-outline" size={18} color="#DC2626" />
+              <Icon name="alert-circle-outline" size={18} color="#DC2626" />
               <Text style={styles.errorBoxText}>{generalError}</Text>
             </View>
           ) : null}
@@ -318,7 +318,7 @@ export default function RegisterScreen({
                   ? dataNascimento.toLocaleDateString('pt-BR')
                   : 'DD/MM/AAAA'}
               </Text>
-              <Ionicons name="calendar-outline" size={20} color="#7B8497" />
+              <Icon name="calendar-outline" size={20} color="#7B8497" />
             </TouchableOpacity>
           </View>
 
@@ -345,7 +345,7 @@ export default function RegisterScreen({
                 activeOpacity={0.7}
               >
                 <Text style={styles.flagEmoji}>{selectedCountry.flag}</Text>
-                <Ionicons name="chevron-down" size={14} color="#7B8497" />
+                <Icon name="chevron-down" size={14} color="#7B8497" />
               </TouchableOpacity>
               <TextInput
                 style={styles.phoneInput}
@@ -376,7 +376,7 @@ export default function RegisterScreen({
                 onPress={() => setShowPassword(!showPassword)}
                 activeOpacity={0.7}
               >
-                <Ionicons
+                <Icon
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                   size={20}
                   color="#7B8497"
@@ -455,7 +455,7 @@ export default function RegisterScreen({
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Selecione o País</Text>
               <TouchableOpacity onPress={() => setShowCountryModal(false)}>
-                <Ionicons name="close" size={24} color="#2A3342" />
+                <Icon name="close" size={24} color="#2A3342" />
               </TouchableOpacity>
             </View>
             <FlatList

@@ -11,8 +11,8 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { errorMessage, notify } from '../../utils/notify';
+import { Icon } from '../../components/AppIcon';
 
 interface ForgotPasswordScreenProps {
   registeredEmails?: string[];
@@ -117,7 +117,7 @@ export default function ForgotPasswordScreen({
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
+          <Icon name="chevron-back" size={26} color="#FFFFFF" />
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
@@ -144,7 +144,7 @@ export default function ForgotPasswordScreen({
               emailError ? styles.inputError : null,
             ]}
           >
-            <Ionicons
+            <Icon
               name="mail-outline"
               size={20}
               color="#7B8497"
@@ -181,7 +181,7 @@ export default function ForgotPasswordScreen({
 
         <View style={styles.infoCard}>
           <View style={styles.infoIconBadge}>
-            <Ionicons name="mail-outline" size={22} color="#21479B" />
+            <Icon name="mail-outline" size={22} color="#21479B" />
           </View>
           <Text style={styles.infoText}>
             Não recebeu o e-mail? Verifique também a caixa de spam.
